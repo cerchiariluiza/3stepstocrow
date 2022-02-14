@@ -1,0 +1,16 @@
+import sys
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
+from awsglue.transforms import *
+from awsglue.dynamicframe import DynamicFrame
+from awsglue.utils import getResolvedOptions
+from awsglue.job import Job
+
+
+from pyspark import SparkContext 
+from awsglue.context import GlueContext 
+
+glueContext = GlueContext(SparkContext.getOrCreate())
+inputDF = glueContext.create_dynamic_frame_from_options(connection_type = "s3", connection_options = {'paths': ["s3://imobiliario/topics/lista.json"], 'recurse':True, 'groupFiles': 'inPartition', 'groupSize': '1048576'}, format="json")
+
+outputDF = glueContext.write_dynamic_frame.from_options(frame = inputDF ,connection_type = "s3",connection_options = {"path": "s3://imobiliario/cashement-boleto/"}, format = "parquet")    
